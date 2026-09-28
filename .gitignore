@@ -3,6 +3,8 @@ dist/
 # generated types
 .astro/
 
+.tickets/
+
 # dependencies
 node_modules/
 
