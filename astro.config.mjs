@@ -43,8 +43,8 @@ export default defineConfig({
 	redirects: wikiFirstSlug ? { '/': `/${wikiFirstSlug}/` } : {},
 	integrations: [
 		starlight({
-			title: 'My Docs',
-			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/withastro/starlight' }],
+			title: 'Developer Docs',
+			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/danjvarela/dev-docs' }],
 			sidebar: wikiSidebar,
 		}),
 	],
