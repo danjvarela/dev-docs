@@ -22,13 +22,24 @@ const wikiUrl = `https://x-access-token:${token}@github.com/${repo}.wiki.git`;
 const workDir = mkdtempSync(path.join(tmpdir(), 'wiki-sync-'));
 
 try {
-	execFileSync('git', ['clone', '--depth', '1', wikiUrl, workDir], { stdio: 'inherit' });
+	execFileSync('git', ['clone', wikiUrl, workDir], { stdio: 'inherit' });
 
 	const files = readdirSync(workDir).filter((file) => file.endsWith('.md'));
 	const pages = files.map((file) => ({
 		name: file.replace(/\.md$/, ''),
 		content: readFileSync(path.join(workDir, file), 'utf-8'),
 	}));
+
+	// Full (non-shallow) clone above so this can read each page's real last-edit
+	// date from wiki history, rather than the date of this sync run.
+	const lastUpdatedByFile = {};
+	for (const file of files) {
+		const date = execFileSync('git', ['log', '-1', '--format=%aI', '--', file], {
+			cwd: workDir,
+			encoding: 'utf-8',
+		}).trim();
+		if (date) lastUpdatedByFile[file] = date;
+	}
 
 	const { pages: convertedPages, nav } = convertWiki(pages);
 
@@ -44,7 +55,21 @@ try {
 	for (const page of convertedPages) {
 		const filePath = path.join(contentDir, `${page.slug}.md`);
 		mkdirSync(path.dirname(filePath), { recursive: true });
-		const frontmatter = `---\ntitle: ${JSON.stringify(page.title)}\nslug: ${JSON.stringify(page.slug)}\n---\n\n`;
+
+		// page.slug is "docs/<name>": wiki filenames never contain spaces (GitHub
+		// encodes them as hyphens on disk), so stripping the prefix recovers the
+		// exact wiki page name needed for the edit-page link and history lookup.
+		const wikiPageName = page.slug.replace(/^docs\//, '');
+		const editUrl = `https://github.com/${repo}/wiki/${wikiPageName}/_edit`;
+		const lastUpdated = lastUpdatedByFile[`${wikiPageName}.md`];
+
+		const frontmatterLines = [
+			`title: ${JSON.stringify(page.title)}`,
+			`slug: ${JSON.stringify(page.slug)}`,
+			`editUrl: ${JSON.stringify(editUrl)}`,
+		];
+		if (lastUpdated) frontmatterLines.push(`lastUpdated: ${JSON.stringify(lastUpdated)}`);
+		const frontmatter = `---\n${frontmatterLines.join('\n')}\n---\n\n`;
 		writeFileSync(filePath, frontmatter + page.body);
 	}
 
