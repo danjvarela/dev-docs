@@ -7,11 +7,21 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "test": "vitest run",
+    "sync-wiki": "node scripts/sync-wiki.mjs"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.42.4",
     "astro": "^7.2.10",
     "sharp": "^0.35.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@astrojs/cloudflare": "^14.3.3",
+    "@bruits/satteri-wasm32-wasi": "^0.10.5",
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.2",
+    "wrangler": "^4.141.0"
   }
 }
