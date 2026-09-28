@@ -2,6 +2,9 @@ name: Wiki sync and deploy
 
 on:
   gollum:
+  push:
+    branches:
+      - master
 
 jobs:
   build-and-deploy:
