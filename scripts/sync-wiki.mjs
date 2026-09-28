@@ -32,24 +32,23 @@ try {
 
 	const { pages: convertedPages, nav } = convertWiki(pages);
 
+	// page.slug is "docs/Page-Name": the Starlight docs collection root is the
+	// site root, so a file must live at src/content/docs/docs/Page-Name.md to
+	// produce both the /docs/Page-Name route and a matching collection slug
+	// for the sidebar config (which references slugs, not routes). An explicit
+	// `slug` frontmatter field is required too: Astro's default slug generator
+	// (github-slugger) lowercases path segments, which would break the
+	// case-preserved routes the spec requires.
 	const contentDir = path.join('src', 'content', 'docs');
 	mkdirSync(contentDir, { recursive: true });
 	for (const page of convertedPages) {
-		const relativePath = page.slug.replace(/^docs\//, '');
-		const filePath = path.join(contentDir, `${relativePath}.md`);
+		const filePath = path.join(contentDir, `${page.slug}.md`);
 		mkdirSync(path.dirname(filePath), { recursive: true });
-		const frontmatter = `---\ntitle: ${JSON.stringify(page.title)}\n---\n\n`;
+		const frontmatter = `---\ntitle: ${JSON.stringify(page.title)}\nslug: ${JSON.stringify(page.slug)}\n---\n\n`;
 		writeFileSync(filePath, frontmatter + page.body);
 	}
 
-	writeFileSync(
-		path.join('src', 'wiki-nav.json'),
-		JSON.stringify(
-			nav.map((entry) => ({ label: entry.label, slug: entry.slug })),
-			null,
-			2,
-		),
-	);
+	writeFileSync(path.join('src', 'wiki-nav.json'), JSON.stringify(nav, null, 2));
 } finally {
 	rmSync(workDir, { recursive: true, force: true });
 }
