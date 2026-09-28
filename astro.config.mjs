@@ -16,25 +16,31 @@ function toStarlightSidebar(entries) {
 	);
 }
 
+/** @param {NavEntry[]} entries @returns {string | undefined} */
+function firstSlug(entries) {
+	for (const entry of entries) {
+		if ('slug' in entry) return entry.slug;
+		if ('items' in entry) {
+			const found = firstSlug(entry.items);
+			if (found) return found;
+		}
+	}
+	return undefined;
+}
+
 /** @type {NavEntry[]} */
 const parsedNav = existsSync(navPath) ? JSON.parse(readFileSync(navPath, 'utf-8')) : [];
-const wikiSidebar = existsSync(navPath)
-	? toStarlightSidebar(parsedNav)
-	: [
-			{
-				label: 'Guides',
-				items: [{ label: 'Example Guide', slug: 'guides/example' }],
-			},
-			{
-				label: 'Reference',
-				items: [{ autogenerate: { directory: 'reference' } }],
-			},
-		];
+const wikiSidebar = toStarlightSidebar(parsedNav);
+const wikiFirstSlug = firstSlug(parsedNav);
 
 // https://astro.build/config
 export default defineConfig({
 	output: 'static',
 	adapter: cloudflare({ imageService: 'compile' }),
+	// No landing page: root redirects to the first synced wiki page. Before the
+	// first `sync-wiki` run there is no nav yet, so root is left unmapped (404)
+	// rather than pointing at a page that doesn't exist.
+	redirects: wikiFirstSlug ? { '/': `/${wikiFirstSlug}/` } : {},
 	integrations: [
 		starlight({
 			title: 'My Docs',
