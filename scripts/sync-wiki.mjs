@@ -68,7 +68,7 @@ try {
 			`slug: ${JSON.stringify(page.slug)}`,
 			`editUrl: ${JSON.stringify(editUrl)}`,
 		];
-		if (lastUpdated) frontmatterLines.push(`lastUpdated: ${JSON.stringify(lastUpdated)}`);
+		if (lastUpdated) frontmatterLines.push(`lastUpdated: ${lastUpdated}`);
 		const frontmatter = `---\n${frontmatterLines.join('\n')}\n---\n\n`;
 		writeFileSync(filePath, frontmatter + page.body);
 	}
