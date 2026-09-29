@@ -38,6 +38,12 @@ export default defineConfig({
 			title: 'Developer Docs',
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/danjvarela/dev-docs' }],
 			sidebar: wikiSidebar,
+			head: [
+				{
+					tag: 'meta',
+					attrs: { name: 'robots', content: 'noindex, nofollow' },
+				},
+			],
 		}),
 	],
 });
