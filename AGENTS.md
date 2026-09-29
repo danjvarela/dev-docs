@@ -40,6 +40,8 @@ astro dev --background
 
 Manage it with `astro dev stop`, `astro dev status`, `astro dev logs`.
 
+Search (Starlight's built-in Pagefind) doesn't work under `astro dev` — Pagefind indexes the built output, which only exists after `astro build`. To test search locally, run `pnpm build && pnpm preview` instead; `preview` serves `dist/`, where the index exists.
+
 ## Astro docs
 
 Full documentation: https://docs.astro.build
