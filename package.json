@@ -4,13 +4,13 @@
   "version": "0.0.1",
   "packageManager": "pnpm@11.25.0",
   "scripts": {
-    "dev": "astro dev",
+    "dev": "pnpm sync-wiki && astro dev",
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
     "test": "vitest run",
-    "sync-wiki": "node scripts/sync-wiki.mjs"
+    "sync-wiki": "node --env-file-if-exists=.env scripts/sync-wiki.mjs"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.42.4",

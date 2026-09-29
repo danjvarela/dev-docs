@@ -33,10 +33,17 @@ const parsedNav = existsSync(navPath) ? JSON.parse(readFileSync(navPath, 'utf-8'
 const wikiSidebar = toStarlightSidebar(parsedNav);
 const wikiFirstSlug = firstSlug(parsedNav);
 
+// astro's `defineConfig` doesn't support a `(command) => config` functional
+// form (object-only in this version) — detect dev via argv instead.
+const isDev = process.argv.slice(2).includes('dev');
+
 // https://astro.build/config
+// The Cloudflare adapter routes `astro dev` through workerd's emulated
+// runtime, which breaks on Astro's own internal dev-facade bundling. Only
+// attach it for build/preview, where it's actually needed.
 export default defineConfig({
 	output: 'static',
-	adapter: cloudflare({ imageService: 'compile' }),
+	adapter: isDev ? undefined : cloudflare({ imageService: 'compile' }),
 	// No landing page: root redirects to the first synced wiki page. Before the
 	// first `sync-wiki` run there is no nav yet, so root is left unmapped (404)
 	// rather than pointing at a page that doesn't exist.
