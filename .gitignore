@@ -3,6 +3,9 @@ dist/
 .wrangler/
 # generated types
 .astro/
+# wiki-synced content
+src/content/docs/
+src/wiki-nav.json
 
 .tickets/
 
