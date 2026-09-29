@@ -9,6 +9,9 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    concurrency:
+      group: wiki-sync-${{ github.event_name }}
+      cancel-in-progress: true
     permissions:
       contents: read
     steps:
