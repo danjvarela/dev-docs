@@ -36,6 +36,7 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'Developer Docs',
+			logo: { src: './src/assets/logo.png' },
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/danjvarela/dev-docs' }],
 			sidebar: wikiSidebar,
 			head: [
